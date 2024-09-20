@@ -808,6 +808,8 @@ class ParallelConfig:
             workers, either "ray" or "mp" (multiprocessing). If either
             pipeline_parallel_size or tensor_parallel_size is greater than 1,
             will default to "ray" if Ray is installed or "mp" otherwise.
+        world_size: Computed as the product of PP and TP size when not provided.
+            For neuron device, this is count of nodes for multi node inference.
     """
 
     def __init__(
@@ -822,6 +824,7 @@ class ParallelConfig:
         placement_group: Optional["PlacementGroup"] = None,
         distributed_executor_backend: Optional[Union[
             str, Type["ExecutorBase"]]] = None,
+        world_size: Optional[int] = None,
     ) -> None:
         self.pipeline_parallel_size = pipeline_parallel_size
         self.tensor_parallel_size = tensor_parallel_size
@@ -831,7 +834,8 @@ class ParallelConfig:
         self.tokenizer_pool_config = tokenizer_pool_config
         self.ray_workers_use_nsight = ray_workers_use_nsight
         self.placement_group = placement_group
-        self.world_size = pipeline_parallel_size * self.tensor_parallel_size
+        self.world_size = world_size or \
+            pipeline_parallel_size * self.tensor_parallel_size
 
         if worker_use_ray:
             if self.distributed_executor_backend is None:

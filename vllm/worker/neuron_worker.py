@@ -45,7 +45,7 @@ class NeuronWorker(LoraNotSupportedWorkerBase, LocalOrDistributedWorkerBase):
 
         self.model_runner: NeuronModelRunner = NeuronModelRunner(
             model_config, parallel_config, scheduler_config, device_config)
-        self.is_driver_worker = True
+        self.is_driver_worker = rank == 0
 
     def init_device(self) -> None:
         self.init_distributed_environment()
@@ -87,7 +87,7 @@ class NeuronWorker(LoraNotSupportedWorkerBase, LocalOrDistributedWorkerBase):
 
     @property
     def do_metadata_broadcast(self) -> bool:
-        return False
+        return self.parallel_config.world_size > 1
 
     @property
     def kv_cache(self) -> Optional[List[List[torch.Tensor]]]:
@@ -115,7 +115,7 @@ class NeuronWorker(LoraNotSupportedWorkerBase, LocalOrDistributedWorkerBase):
         vLLM still needs the environment inited when TP/PP > 1
         """
         init_distributed_environment(
-            world_size=1,
+            world_size=self.parallel_config.world_size,
             rank=self.rank,
             local_rank=self.local_rank,
             distributed_init_method=self.distributed_init_method,

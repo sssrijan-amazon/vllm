@@ -1,3 +1,4 @@
+import os
 from typing import List, Set, Tuple
 
 from vllm.executor.executor_base import ExecutorAsyncBase, ExecutorBase
@@ -34,8 +35,8 @@ class NeuronExecutor(ExecutorBase):
             scheduler_config=self.scheduler_config,
             device_config=self.device_config,
             cache_config=self.cache_config,
-            local_rank=0,
-            rank=0,
+            local_rank=-1,
+            rank=int(os.getenv("NEURON_RANK_ID", 0)),
             distributed_init_method=distributed_init_method)
         self.driver_worker.init_device()
         self.driver_worker.load_model()

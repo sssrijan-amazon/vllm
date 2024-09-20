@@ -34,9 +34,10 @@ class ModelInputForNeuron(ModelRunnerInputBase):
     sampling_metadata: Optional["SamplingMetadata"] = None
     multi_modal_kwargs: Optional[BatchedTensorInputs] = None
 
-    def as_broadcastable_tensor_dict(
-            self) -> Dict[str, Union[int, torch.Tensor]]:
-        raise NotImplementedError("ModelInputForNeuron cannot be broadcast.")
+    def as_broadcastable_tensor_dict(self) -> Dict[str, Any]:
+        return {
+            "ModelInputForNeuron": self,
+        }
 
     @classmethod
     def from_broadcasted_tensor_dict(
@@ -45,7 +46,7 @@ class ModelInputForNeuron(ModelRunnerInputBase):
         attn_backend: Optional["AttentionBackend"] = None,
     ) -> "ModelInputForNeuron":
         assert attn_backend is None
-        return cls.from_broadcasted_tensor_dict(tensor_dict)
+        return tensor_dict['ModelInputForNeuron']
 
 
 class NeuronModelRunner(ModelRunnerBase[ModelInputForNeuron]):
