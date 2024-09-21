@@ -36,7 +36,7 @@ from torch.distributed import Backend, ProcessGroup
 import vllm.envs as envs
 from vllm.logger import init_logger
 from vllm.platforms import current_platform
-from vllm.utils import supports_custom_op, is_neuron
+from vllm.utils import is_neuron, supports_custom_op
 
 
 @dataclass

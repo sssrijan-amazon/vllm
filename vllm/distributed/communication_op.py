@@ -3,8 +3,9 @@ from typing import Any, Dict, Optional, Union
 import torch
 import torch.distributed
 
-from .parallel_state import get_tp_group, get_world_group
 from vllm.utils import is_neuron
+
+from .parallel_state import get_tp_group, get_world_group
 
 
 def tensor_model_parallel_all_reduce(input_: torch.Tensor) -> torch.Tensor:
