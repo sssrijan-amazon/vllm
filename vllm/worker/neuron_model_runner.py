@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from importlib.util import find_spec
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import torch
 from torch import nn

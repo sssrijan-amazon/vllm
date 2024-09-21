@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Tuple
 
 import torch
 import torch.nn as nn
-import transformers
 from transformers import PretrainedConfig
 
 from vllm.config import ModelConfig, ParallelConfig, SchedulerConfig
