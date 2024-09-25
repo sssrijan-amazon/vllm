@@ -103,7 +103,6 @@ class EngineArgs:
                                                  Type[ExecutorBase]]] = None
     pipeline_parallel_size: int = 1
     tensor_parallel_size: int = 1
-    world_size: Optional[int] = None
     max_parallel_loading_workers: Optional[int] = None
     block_size: int = 16
     enable_prefix_caching: bool = False
@@ -339,10 +338,6 @@ class EngineArgs:
                             type=int,
                             default=EngineArgs.tensor_parallel_size,
                             help='Number of tensor parallel replicas.')
-        parser.add_argument('--world-size',
-                            type=int,
-                            default=EngineArgs.world_size,
-                            help='World size.')
         parser.add_argument(
             '--max-parallel-loading-workers',
             type=int,
@@ -895,8 +890,7 @@ class EngineArgs:
                 self.tokenizer_pool_extra_config,
             ),
             ray_workers_use_nsight=self.ray_workers_use_nsight,
-            distributed_executor_backend=self.distributed_executor_backend,
-            world_size=self.world_size)
+            distributed_executor_backend=self.distributed_executor_backend)
 
         max_model_len = model_config.max_model_len
         use_long_context = max_model_len > 32768
