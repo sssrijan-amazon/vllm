@@ -35,7 +35,7 @@ class NeuronExecutor(ExecutorBase):
             scheduler_config=self.scheduler_config,
             device_config=self.device_config,
             cache_config=self.cache_config,
-            local_rank=-1,
+            local_rank=0,
             rank=int(os.getenv("NEURON_RANK_ID", 0)),
             distributed_init_method=distributed_init_method)
         self.driver_worker.init_device()

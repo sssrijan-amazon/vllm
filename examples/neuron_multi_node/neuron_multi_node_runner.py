@@ -1,20 +1,20 @@
 import asyncio
 import os
 
-from vllm.entrypoints.neuron_multi_node import api_server
+from vllm.entrypoints import api_server
 
 
 def main():
     rank_id = int(os.getenv("NEURON_RANK_ID", "0"))
     if rank_id == 0:
-        asyncio.run(master())
+        asyncio.run(driver())
     else:
         asyncio.run(main_worker())
 
 
-async def master():
+async def driver():
     args, engine = await api_server.initialize_worker()
-    await api_server.run_master(args, engine)
+    await api_server.run_driver(args, engine)
     # call asyn llm engine
 
 

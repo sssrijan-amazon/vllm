@@ -94,6 +94,33 @@ def build_app(args: Namespace) -> FastAPI:
     return app
 
 
+def parse_args():
+    parser = FlexibleArgumentParser()
+    parser.add_argument("--host", type=str, default=None)
+    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--ssl-keyfile", type=str, default=None)
+    parser.add_argument("--ssl-certfile", type=str, default=None)
+    parser.add_argument("--ssl-ca-certs",
+                        type=str,
+                        default=None,
+                        help="The CA certificates file")
+    parser.add_argument(
+        "--ssl-cert-reqs",
+        type=int,
+        default=int(ssl.CERT_NONE),
+        help="Whether client certificate is required (see stdlib ssl module's)"
+    )
+    parser.add_argument(
+        "--root-path",
+        type=str,
+        default=None,
+        help="FastAPI root_path when app is behind a path based routing proxy")
+    parser.add_argument("--log-level", type=str, default="debug")
+    parser = AsyncEngineArgs.add_cli_args(parser)
+    args = parser.parse_args()
+    return args
+
+
 async def init_app(
     args: Namespace,
     llm_engine: Optional[AsyncLLMEngine] = None,
@@ -135,29 +162,21 @@ async def run_server(args: Namespace,
     await shutdown_task
 
 
-if __name__ == "__main__":
-    parser = FlexibleArgumentParser()
-    parser.add_argument("--host", type=str, default=None)
-    parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--ssl-keyfile", type=str, default=None)
-    parser.add_argument("--ssl-certfile", type=str, default=None)
-    parser.add_argument("--ssl-ca-certs",
-                        type=str,
-                        default=None,
-                        help="The CA certificates file")
-    parser.add_argument(
-        "--ssl-cert-reqs",
-        type=int,
-        default=int(ssl.CERT_NONE),
-        help="Whether client certificate is required (see stdlib ssl module's)"
-    )
-    parser.add_argument(
-        "--root-path",
-        type=str,
-        default=None,
-        help="FastAPI root_path when app is behind a path based routing proxy")
-    parser.add_argument("--log-level", type=str, default="debug")
-    parser = AsyncEngineArgs.add_cli_args(parser)
-    args = parser.parse_args()
+async def run_driver(args, engine):
+    await run_server(args, engine)
 
+
+async def initialize_worker():
+    args = parse_args()
+
+    logger.info("vLLM API server version %s", VLLM_VERSION)
+    logger.info("args: %s", args)
+
+    await init_app(args)
+    assert engine is not None
+    return args, engine
+
+
+if __name__ == "__main__":
+    args = parse_args()
     asyncio.run(run_server(args))
