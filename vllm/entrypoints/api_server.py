@@ -162,21 +162,6 @@ async def run_server(args: Namespace,
     await shutdown_task
 
 
-async def run_driver(args, engine):
-    await run_server(args, engine)
-
-
-async def initialize_worker():
-    args = parse_args()
-
-    logger.info("vLLM API server version %s", VLLM_VERSION)
-    logger.info("args: %s", args)
-
-    await init_app(args)
-    assert engine is not None
-    return args, engine
-
-
 if __name__ == "__main__":
     args = parse_args()
     asyncio.run(run_server(args))

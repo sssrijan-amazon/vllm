@@ -1,7 +1,7 @@
 import asyncio
 import os
 
-from vllm.entrypoints import api_server
+from vllm.entrypoints.neuron_multi_node import api_server
 
 
 def main():
